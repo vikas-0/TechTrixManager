@@ -23,9 +23,11 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = 'u7=#o#&azr+u5y4jk408e7z(p++p$dx#g99385f$bfgb5&wfp+'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
-ALLOWED_HOSTS = ['192.168.0.3']
+ALLOWED_HOSTS = ['192.168.0.3',
+                 '0.0.0.0',
+                 'localhost']
 
 
 # Application definition
@@ -41,7 +43,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 #     Mod wsgi , can be removed if not using mod wsgi express
-    'mod_wsgi.server',
+#     'mod_wsgi.server',
 ]
 
 MIDDLEWARE = [
