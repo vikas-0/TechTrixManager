@@ -51,9 +51,9 @@ def registerForEvent(request):
     form = EventRegistrationForm(request.POST or None)
 
     # Calculate money by the user
-    moneyEarned =0
-    moneyEarned+=EventRegistration.objects.filter(registeredBy=request.user).aggregate(Sum('feePayable'))['feePayable__sum']
-
+    # moneyEarned =0
+    moneyEarned=EventRegistration.objects.filter(registeredBy=request.user).aggregate(Sum('feePayable'))['feePayable__sum']
+    moneyEarned=moneyEarned if moneyEarned is not None else 0
     if form.is_valid():
         registration =form.save(commit=False)
         registration.registeredBy = request.user

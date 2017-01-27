@@ -12,14 +12,14 @@
         <link rel="stylesheet" href="{% static 'site/css/bootstrap-tagsinput.css' %}">
         <link rel="stylesheet" href="{% static 'site/css/font-awesome.min.css' %}">
         <link rel="stylesheet" href="{% static 'site/css/select2.min.css' %}">
-<form class="form-horizontal" method="POST" action="{% url 'registration:eventreg'%}">
+<form class="form-horizontal" method="POST" onsubmit="return formValidation()" action="{% url 'registration:eventreg'%}">
           {% csrf_token %}
   <fieldset style="margin:2em">
 
       {% for field in form %}
     <div class="form-group">
         <div class="col-sm-offset-2 col-sm-10">
-            <span class="text-danger small">{{ field.errors }}</span>
+            <span id="errormsg"  class="text-danger small">{{ field.errors }}</span>
         </div>
         <label class="control-label col-sm-2">{{ field.label_tag }}</label>
         <div class="col-sm-10">{{ field }}</div>
@@ -44,9 +44,10 @@ elt.tagsinput({
   confirmKeys: [13, 44,32, 188]
 });
 
+
 elt.on('itemAdded', function(event) {
 $.ajax({
-  url: 'http://localhost/reg/candidate/?id='.concat(event.item),
+  url: window.location.origin.concat('/reg/candidate/?id='.concat(event.item)),
   dataType: 'json',
   success: function(data){
       $("span.tag:contains("+event.item+")").removeClass("label-info",1000,"easeInBack");
@@ -63,6 +64,15 @@ $.ajax({
 $(document).ready(function() {
   $("#id_event").select2();
 });
+
+function formValidation() {
+    if($('.bootstrap-tagsinput').find($('span.label-danger')).length==0){
+        return true;
+    }
+    console.log('hello');
+    $('#errormsg').text('One or more user ID is invalid');
+    return false;
+}
 
 </script>
 {% endblock %}
