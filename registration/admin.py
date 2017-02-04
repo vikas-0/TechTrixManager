@@ -9,5 +9,5 @@ class EventRegistrationAdmin(admin.ModelAdmin):
     form = EventRegistrationForm
 
 admin.site.register(Candidate)
-admin.site.register(EventRegistration, EventRegistrationAdmin)
+admin.site.register(EventRegistration)
 admin.site.register(EventResult)

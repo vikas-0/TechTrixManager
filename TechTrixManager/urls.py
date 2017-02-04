@@ -19,4 +19,5 @@ from django.contrib import admin
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^reg/', include('registration.urls')),
+    url(r'^event/', include('eventman.urls')),
 ]

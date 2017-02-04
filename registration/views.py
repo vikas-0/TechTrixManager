@@ -1,12 +1,14 @@
-from django.shortcuts import render
-from django.contrib.auth import authenticate, login
+from django.shortcuts import render, get_object_or_404
+from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required, user_passes_test
-from django.http import HttpResponseRedirect, JsonResponse, HttpResponse
+from django.http import HttpResponseRedirect, JsonResponse, HttpResponse, Http404
+from django.contrib import messages
+from django.urls import reverse
+from  ast import literal_eval
 from .models import Candidate
 from .forms import *
 from django.db.models import Sum
-
-
+from eventman.models import Event as EventList
 # Create your views here.
 
 # Home page for candidate registration(General & event)
@@ -52,16 +54,81 @@ def registerForEvent(request):
 
     # Calculate money by the user
     # moneyEarned =0
-    moneyEarned=EventRegistration.objects.filter(registeredBy=request.user).aggregate(Sum('feePayable'))['feePayable__sum']
+    moneyEarnedbyEvent=EventRegistration.objects.filter(registeredBy=request.user, feePaid=True).aggregate(Sum('feePayable'))['feePayable__sum']
+    moneyEarnedbyEvent=moneyEarnedbyEvent if moneyEarnedbyEvent is not None else 0
+    moneyEarnedbyGen=Candidate.objects.filter(registeredBy=request.user, feePaid=True).aggregate(Sum('feePayable'))['feePayable__sum']
+    moneyEarnedbyGen = moneyEarnedbyGen if moneyEarnedbyGen is not None else 0
+    moneyEarned=moneyEarnedbyEvent+moneyEarnedbyGen
     moneyEarned=moneyEarned if moneyEarned is not None else 0
+
     if form.is_valid():
         registration =form.save(commit=False)
         registration.registeredBy = request.user
         registration.feePayable = registration.event.fee
         registration.save()
-        return HttpResponse(str(registration.pk))
-    contexts = {'form': form, 'user': request.user.first_name + ' ' + request.user.last_name, 'money': moneyEarned}
+        contexts = {'user': request.user.username, 'money': moneyEarned, 'registratinid':registration.pk, 'registeredevent':registration.event.name, 'regfee': registration.feePayable, 'backurl':reverse('registration:eventreg')}
+        messages.add_message(request,messages.INFO,contexts)
+        return HttpResponseRedirect(reverse('registration:evenregticket'))
+        # return render(request, template_name='eventregtikcet.html', context=contexts)
+    contexts = {'form': form, 'user': request.user.username, 'money': moneyEarned}
     return render(request, template_name='eventreg.html',context=contexts)
+
+
+@login_required(login_url='/reg/login/')
+@user_passes_test(login_url='/reg/login/', test_func= lambda user: 'registrar' in [i.name for i in user.groups.all()])
+def generalRegistration(request):
+    form = GeneralRegistrationForm(request.POST or None)
+
+    # Calculate money by the user
+    # moneyEarned =0
+    moneyEarnedbyEvent=EventRegistration.objects.filter(registeredBy=request.user, feePaid=True).aggregate(Sum('feePayable'))['feePayable__sum']
+    moneyEarnedbyEvent=moneyEarnedbyEvent if moneyEarnedbyEvent is not None else 0
+    moneyEarnedbyGen=Candidate.objects.filter(registeredBy=request.user, feePaid=True).aggregate(Sum('feePayable'))['feePayable__sum']
+    moneyEarnedbyGen = moneyEarnedbyGen if moneyEarnedbyGen is not None else 0
+    moneyEarned=moneyEarnedbyEvent+moneyEarnedbyGen
+
+    #Check form data
+    if form.is_valid():
+        registration =form.save(commit=False)
+        registration.registeredBy = request.user
+        registration.save()
+        contexts = {'user': request.user.username, 'money': moneyEarned, 'registratinid':registration.pk, 'registeredevent':"General Registration", 'regfee': registration.feePayable, 'backurl': reverse('registration:generalreg')}
+        messages.add_message(request,messages.INFO,contexts)
+        return HttpResponseRedirect(reverse('registration:evenregticket'))
+        # return render(request, template_name='eventregtikcet.html', context=contexts)
+    contexts = {'form': form, 'user': request.user.username, 'money': moneyEarned, 'fee':GENERAL_REGISTRATION_FEE}
+    return render(request, template_name='generalreg.html',context=contexts)
+
+
+@login_required(login_url='/reg/login/')
+@user_passes_test(login_url='/reg/login/', test_func= lambda user: 'coordinator' in [i.name for i in user.groups.all()])
+def scoreSub(request, event_id):
+    event=get_object_or_404(EventList, pk=event_id)
+    print(event_id, str(event))
+    form = EventParticipationForm(request.POST or None, eventId=event)
+
+    #Check form data
+    if form.is_valid():
+        result =form.save(commit=False)
+        result.scoreSubmittedBy = request.user
+        result.save()
+        return HttpResponse('success')
+    contexts = {'form': form, 'user': request.user.username, }
+    return render(request, template_name='scoresubmisiion.html',context=contexts)
+
+
+@login_required(login_url='/reg/login/')
+@user_passes_test(login_url='/reg/login/', test_func= lambda user: 'registrar' in [i.name for i in user.groups.all()])
+def evenregticket(request):
+    storage=messages.get_messages(request)
+    contexts=None
+    for message in storage:
+        contexts=message
+        break
+    jsonstring=str(contexts)
+    contexts=literal_eval(jsonstring)
+    # return HttpResponse(context)
+    return render(request, template_name='eventregtikcet.html', context=contexts)
 
 
 # APIs ....
@@ -88,5 +155,8 @@ def verifyCandidate(request):
             {'resp': False, 'data': None},
             safe=False)
 
-def getFees(request, event_id):
-    return HttpResponse(event_id)
+
+
+def logoutUser(request):
+    logout(request)
+    return render(request, 'login.html', {'error_message': 'Logged Out', 'next': request})

@@ -4,8 +4,8 @@ from .models import EventRegistration
 from .models import EventResult
 
 
-@receiver(post_save, sender=EventRegistration)
-def createEventResultObject(sender, instance, created, **kwargs):
-    if created:
-        EventResult.objects.create(team=instance)
-
+# @receiver(post_save, sender=EventRegistration)
+# def createEventResultObject(sender, instance, created, **kwargs):
+#     if created:
+#         EventResult.objects.create(team=instance)
+#

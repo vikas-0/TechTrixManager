@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% block title %}Event Registration{% endblock %}
+{% block title %}Ticket{% endblock %}
 
  {% block navrightitem %}
 <li><a><i class="fa fa-inr"></i>&nbsp;{{money}}</a></li>
@@ -8,43 +8,22 @@
                 {% endblock %}
 {% block body %}
 {% load staticfiles %}
-    <script src="{% static 'site/js/bootstrap-tagsinput.js' %}"></script>
-    <script src="{% static 'site/js/select2.full.min.js' %}"></script>
-        <link rel="stylesheet" href="{% static 'site/css/bootstrap-tagsinput.css' %}">
         <link rel="stylesheet" href="{% static 'site/css/font-awesome.min.css' %}">
-        <link rel="stylesheet" href="{% static 'site/css/select2.min.css' %}">
-<form class="form-horizontal center-block" method="POST" onsubmit="return formValidation()" action="{% url 'registration:eventreg'%}">
-          {% csrf_token %}
-  <fieldset style="margin:2em">
+    <div class="panel panel-default">
+    <div class="panel-heading">Registration Information</div>
+        <div class="panel-body">
 
-      {% for field in form %}
-    <div class="form-group">
-        <div class="col-sm-offset-2 col-sm-10">
-            <span id="errormsg"  class="text-danger small">{{ field.errors }}</span>
+            <div><label> Registration ID:</label><span>{{ registratinid }}</span></div>
+            <div><label> Registered For: </label><span>{{ registeredevent }}</span></div>
+            <div><label> Registration Fee: </label><span>₹{{ regfee }}</span></div>
         </div>
-
-        <label class="control-label col-sm-2">{{ field.label_tag }}</label>
-        <div class="col-sm-10">{{ field }}</div>
+    <div class="panel-footer">Give these info to coordinator
+    <br>
+        <a class=" btn btn-default right" href="{{ backurl }}">Go Back</a>
     </div>
-{% endfor %}
-
-    <div class="form-group">
-
-
-      <div class="col-lg-10 col-lg-offset-2">
-
-          <div id="eventinfo"></div>
-          <input type="submit" name="register" class="btn btn-primary" value="Register">
-      </div>
     </div>
-  </fieldset>
-</form>
 
  <script>
- $(document).ready(function() {
-  $("#id_event").select2();
-});
-
 var elt = $('#id_participants');
 elt.tagsinput({
   trimValue: true,

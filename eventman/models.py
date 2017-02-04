@@ -10,7 +10,6 @@ class Event(models.Model):
     minParticipant = models.IntegerField(null=False)
     maxParticipant = models.IntegerField(null=False)
     fee = models.IntegerField(null=False, blank=False, default=0)
-    maxIsBetter = models.BooleanField(default=True, null=False)
     def __str__(self):
         return self.name
 

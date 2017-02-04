@@ -8,5 +8,9 @@ urlpatterns = [
     url(r'^login/', views.loginUser, name='login'),
     url(r'^candidate/', views.verifyCandidate, name='user'),
     url(r'^eventreg/', views.registerForEvent, name='eventreg'),
-    url(r'^getFees/(?P<event_id>[0-9]+)', views.getFees, name='getFees')
+    url(r'^generalreg/', views.generalRegistration, name='generalreg'),
+    url(r'^logout/', views.logoutUser, name='logout'),
+    url(r'^eventregticket/', views.evenregticket, name='evenregticket'),
+    url(r'^scoreSub/(?P<event_id>[0-9]+)', views.scoreSub, name='scoreSub')
+
 ]

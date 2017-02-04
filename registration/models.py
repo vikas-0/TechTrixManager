@@ -18,16 +18,16 @@ class Candidate(models.Model):
     Users with group 'registrar' will be able to register the general Candidates
     """
     name = models.CharField(blank=False, null=False, max_length=50)
-    email = models.EmailField(blank=False, null=False)
+    email = models.EmailField(blank=False, null=False, unique=True)
     contactNo = models.CharField(blank=False, null=False, max_length=10)
     college = models.ForeignKey(College, null=False)
     feePayable = models.IntegerField(default=GENERAL_REGISTRATION_FEE)
     feePaid = models.BooleanField(default=True)
-    registeredBy = models.ForeignKey(User, limit_choices_to={'groups__name':'registrar'})
+    registeredBy = models.ForeignKey(User, limit_choices_to={'groups__name':'registrar'}, null=False)
     timeStamp = models.DateTimeField(default=timezone.now, editable=False)
 
     def __str__(self):
-        return self.name+"-"+str(self.college)
+        return str(self.pk)+"-"+self.name+"-"+str(self.college)
 
 
 class EventRegistration(models.Model):
@@ -36,13 +36,13 @@ class EventRegistration(models.Model):
     """
     event = models.ForeignKey(Event, null=False)
     feePayable = models.IntegerField()
-    feePaid = models.BooleanField(default=True)
+    feePaid = models.BooleanField(default=True, null=False)
     participants = models.ManyToManyField(Candidate)
     timeStamp = models.DateTimeField(default=timezone.now, editable=False)
-    registeredBy = models.ForeignKey(User, limit_choices_to={'groups__name':'registrar'})
+    registeredBy = models.ForeignKey(User, limit_choices_to={'groups__name':'registrar'}, null=False)
 
     def __str__(self):
-        return str(self.event)+" "+str(self.participants.all())
+        return str(self.pk)+" "+str(self.event)
 
 class EventResult(models.Model):
     """
@@ -51,8 +51,8 @@ class EventResult(models.Model):
     team = models.OneToOneField(EventRegistration, null=False)
     participated = models.BooleanField(default=False, null=False)
     score = models.DecimalField(max_digits=10, decimal_places=4, null=True)
-    status = models.CharField(default='Not participated yet', null=False, max_length=100)
     nextRoundEligibility = models.BooleanField(default=False, null=False)
+    scoreSubmittedBy = models.ForeignKey(User, limit_choices_to={'groups__name':'coordinator'}, null=False)
 
     def __str__(self):
         return str(self.team.pk)
