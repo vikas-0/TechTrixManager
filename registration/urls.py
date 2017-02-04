@@ -7,6 +7,7 @@ urlpatterns = [
     url(r'^$', views.registrationHome, name='home'),
     url(r'^login/', views.loginUser, name='login'),
     url(r'^candidate/', views.verifyCandidate, name='user'),
+    url(r'^candidateListinEvent/', views.cadindateDetailsofEvent, name='candidateList'),
     url(r'^eventreg/', views.registerForEvent, name='eventreg'),
     url(r'^generalreg/', views.generalRegistration, name='generalreg'),
     url(r'^logout/', views.logoutUser, name='logout'),

@@ -5,7 +5,6 @@ from django.http import HttpResponseRedirect, JsonResponse, HttpResponse, Http40
 from django.contrib import messages
 from django.urls import reverse
 from  ast import literal_eval
-from .models import Candidate
 from .forms import *
 from django.db.models import Sum
 from eventman.models import Event as EventList
@@ -99,12 +98,12 @@ def generalRegistration(request):
     contexts = {'form': form, 'user': request.user.username, 'money': moneyEarned, 'fee':GENERAL_REGISTRATION_FEE}
     return render(request, template_name='generalreg.html',context=contexts)
 
-
+# Score submission view
 @login_required(login_url='/reg/login/')
 @user_passes_test(login_url='/reg/login/', test_func= lambda user: 'coordinator' in [i.name for i in user.groups.all()])
 def scoreSub(request, event_id):
     event=get_object_or_404(EventList, pk=event_id)
-    print(event_id, str(event))
+    eventName=event.name
     form = EventParticipationForm(request.POST or None, eventId=event)
 
     #Check form data
@@ -112,8 +111,8 @@ def scoreSub(request, event_id):
         result =form.save(commit=False)
         result.scoreSubmittedBy = request.user
         result.save()
-        return HttpResponse('success')
-    contexts = {'form': form, 'user': request.user.username, }
+        return render(request, template_name='scoresubmisiion.html', context={'form':form,'eventName':eventName,'user':request.user.username, 'message':'Score Recorded, Submit Another'})
+    contexts = {'form': form, 'eventName':eventName,'user': request.user.username, }
     return render(request, template_name='scoresubmisiion.html',context=contexts)
 
 
@@ -154,6 +153,34 @@ def verifyCandidate(request):
         return JsonResponse(
             {'resp': False, 'data': None},
             safe=False)
+
+
+def cadindateDetailsofEvent(request):
+    """
+    Returns candidate details
+    :param request:
+    :return: boolean
+    """
+    try:
+        if request.method=='GET':
+            id=request.GET.copy()
+            if 'id' in id :
+                eventRegistrationId = id['id']
+
+                if EventRegistration.objects.filter(pk=eventRegistrationId):
+                    eventRegistration=EventRegistration.objects.get(pk=eventRegistrationId)
+                    htmlTable=''
+                    for candidate in eventRegistration.participants.all():
+                        htmlTable=htmlTable+'<tr><td>'+str(candidate.name)+'</td><td>'+str(candidate.college)+'</td></tr>'
+                    return JsonResponse({'resp':True, 'data':{'id': candidate.pk, 'table': htmlTable}}, safe=False)
+        return JsonResponse(
+            {'resp': False, 'data': None},
+            safe=False)
+    except:
+        return JsonResponse(
+            {'resp': False, 'data': None},
+            safe=False)
+
 
 
 

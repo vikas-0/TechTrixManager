@@ -12,8 +12,10 @@
         <link rel="stylesheet" href="{% static 'site/css/bootstrap-tagsinput.css' %}">
         <link rel="stylesheet" href="{% static 'site/css/font-awesome.min.css' %}">
         <link rel="stylesheet" href="{% static 'site/css/select2.min.css' %}">
+    <h1 class="text-primary">{{ eventName }}</h1>
 <form class="form-horizontal center-block" method="POST"  action="">
-          {% csrf_token %}
+    <span>{{ message }}</span>
+    {% csrf_token %}
   <fieldset style="margin:2em">
 
       {% for field in form %}
@@ -26,6 +28,16 @@
         <div class="col-sm-10">{{ field }}</div>
     </div>
 {% endfor %}
+  <table id="canlist" style="display: none" class="table">
+      <thead>
+      <tr>
+          <th>Name</th>
+          <th>College</th>
+      </tr>
+      </thead>
+
+      <tbody     id="canlistdata"></tbody>
+  </table>
 
     <div class="form-group">
 
@@ -42,5 +54,20 @@
  $(document).ready(function() {
   $("#id_team").select2();
 });
+
+ $("#id_team").on('change', function (e) {
+    var optionSelected=$('option:selected',this);
+    var valueSelected=this.value;
+    console.log(valueSelected);
+    $.ajax({
+  url: window.location.origin.concat('{% url 'registration:candidateList' %}?id='.concat(valueSelected)),
+  dataType: 'json',
+  success: function(data){
+    console.log(data.data.table);
+    $('#canlistdata').html(data.data.table);
+    $('#canlist').css("display","block");
+  }
+});
+ });
 </script>
 {% endblock %}
