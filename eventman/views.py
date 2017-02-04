@@ -4,9 +4,11 @@ from .models import Event
 
 def eventDet(request, event_id):
     try:
+        print('hello')
         if Event.objects.filter(pk=event_id):
             event=Event.objects.get(pk=event_id)
-            return JsonResponse({'resp':True, 'data':{'id': event.pk, 'name': event.name, 'fees':event.fee, 'minParticipant':event.minParticipant, 'maxParticipant': event.maxParticipant, 'maxIsBetter':event.maxIsBetter}}, safe=False)
+            print('hello again')
+            return JsonResponse({'resp':True, 'data':{'id': event.pk, 'name': event.name, 'fees':event.fee, 'minParticipant':event.minParticipant, 'maxParticipant': event.maxParticipant}}, safe=False)
         return JsonResponse(
             {'resp': False, 'data': None},
             safe=False)

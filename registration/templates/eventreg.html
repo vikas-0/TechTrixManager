@@ -77,7 +77,7 @@ $("#id_event").on('change', function (e) {
   url: window.location.origin.concat('/event/eventDet/'.concat(valueSelected)),
   dataType: 'json',
   success: function(data){
-    console.log(data.data.fees);
+    console.log(data);
     $('#eventinfo').html('<div class="label-info"><strong>Registration fees</strong>: ₹<span>'+data.data.fees+'</span>, <strong>Maximum Member</strong>: <span>'+data.data.maxParticipant+'</span></div>');
 {#    $("#id_event").select2({#}
 {#        maximumSelectionLength:data.data.maxParticipant#}

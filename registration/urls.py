@@ -12,6 +12,7 @@ urlpatterns = [
     url(r'^generalreg/', views.generalRegistration, name='generalreg'),
     url(r'^logout/', views.logoutUser, name='logout'),
     url(r'^eventregticket/', views.evenregticket, name='evenregticket'),
-    url(r'^scoreSub/(?P<event_id>[0-9]+)', views.scoreSub, name='scoreSub')
+    url(r'^scoreSub/(?P<event_id>[0-9]+)$', views.scoreSub, name='scoreSub'),
+    url(r'^scoreSub/(?P<event_id>[0-9]+)/leaderBoard', views.leaderBoard, name='leaderboard')
 
 ]

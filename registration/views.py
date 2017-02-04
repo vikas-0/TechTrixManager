@@ -115,6 +115,16 @@ def scoreSub(request, event_id):
     contexts = {'form': form, 'eventName':eventName,'user': request.user.username, }
     return render(request, template_name='scoresubmisiion.html',context=contexts)
 
+@login_required(login_url='/reg/login/')
+@user_passes_test(login_url='/reg/login/', test_func= lambda user: 'coordinator' in [i.name for i in user.groups.all()])
+def leaderBoard(request, event_id):
+    event=get_object_or_404(EventList, pk=event_id)
+    eventName=event.name
+    resultset=EventResult.objects.filter(team__event=event)
+    table=LeaderBoardTable(resultset)
+    contexts = {'eventName':eventName,'user': request.user.username, 'table':table }
+    return render(request, template_name='leaderboard.html',context=contexts)
+
 
 @login_required(login_url='/reg/login/')
 @user_passes_test(login_url='/reg/login/', test_func= lambda user: 'registrar' in [i.name for i in user.groups.all()])

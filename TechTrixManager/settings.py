@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django_tables2'
 #     Mod wsgi , can be removed if not using mod wsgi express
 #     'mod_wsgi.server',
 ]

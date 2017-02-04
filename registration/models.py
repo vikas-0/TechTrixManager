@@ -22,7 +22,7 @@ class Candidate(models.Model):
     contactNo = models.CharField(blank=False, null=False, max_length=10)
     college = models.ForeignKey(College, null=False)
     feePayable = models.IntegerField(default=GENERAL_REGISTRATION_FEE)
-    feePaid = models.BooleanField(default=True)
+    feePaid = models.BooleanField(default=False, null=False)
     registeredBy = models.ForeignKey(User, limit_choices_to={'groups__name':'registrar'}, null=False)
     timeStamp = models.DateTimeField(default=timezone.now, editable=False)
 
@@ -36,13 +36,18 @@ class EventRegistration(models.Model):
     """
     event = models.ForeignKey(Event, null=False)
     feePayable = models.IntegerField()
-    feePaid = models.BooleanField(default=True, null=False)
+    feePaid = models.BooleanField(default=False, null=False)
     participants = models.ManyToManyField(Candidate)
+    teamName=models.CharField(max_length=40, null=True)
     timeStamp = models.DateTimeField(default=timezone.now, editable=False)
     registeredBy = models.ForeignKey(User, limit_choices_to={'groups__name':'registrar'}, null=False)
 
     def __str__(self):
-        return str(self.pk)+" "+str(self.event)
+        college=''
+        for participant in self.participants.all():
+            if str(participant.college) not in college:
+                college=college+', '+str(participant.college)
+        return str(self.pk)+" "+str(self.teamName)+" "+college+"-"+str(self.event)
 
 class EventResult(models.Model):
     """
@@ -53,6 +58,6 @@ class EventResult(models.Model):
     score = models.DecimalField(max_digits=10, decimal_places=4, null=True)
     nextRoundEligibility = models.BooleanField(default=False, null=False)
     scoreSubmittedBy = models.ForeignKey(User, limit_choices_to={'groups__name':'coordinator'}, null=False)
-
+    timeStamp = models.DateTimeField(default=timezone.now, editable=False)
     def __str__(self):
         return str(self.team.pk)
