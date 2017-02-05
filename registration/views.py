@@ -8,6 +8,7 @@ from  ast import literal_eval
 from .forms import *
 from django.db.models import Sum
 from eventman.models import Event as EventList
+from dal import autocomplete
 # Create your views here.
 
 # Home page for candidate registration(General & event)
@@ -65,6 +66,8 @@ def registerForEvent(request):
         registration.registeredBy = request.user
         registration.feePayable = registration.event.fee
         registration.save()
+        form.save_m2m()
+
         contexts = {'user': request.user.username, 'money': moneyEarned, 'registratinid':registration.pk, 'registeredevent':registration.event.name, 'regfee': registration.feePayable, 'backurl':reverse('registration:eventreg')}
         messages.add_message(request,messages.INFO,contexts)
         return HttpResponseRedirect(reverse('registration:evenregticket'))
@@ -111,8 +114,8 @@ def scoreSub(request, event_id):
         result =form.save(commit=False)
         result.scoreSubmittedBy = request.user
         result.save()
-        return render(request, template_name='scoresubmisiion.html', context={'form':form,'eventName':eventName,'user':request.user.username, 'message':'Score Recorded, Submit Another'})
-    contexts = {'form': form, 'eventName':eventName,'user': request.user.username, }
+        return render(request, template_name='scoresubmisiion.html', context={'form':form,'eventName':eventName,'user':request.user.username,'event':event_id, 'message':'Score Recorded, Submit Another'})
+    contexts = {'form': form, 'eventName':eventName,'user': request.user.username, 'event':event_id}
     return render(request, template_name='scoresubmisiion.html',context=contexts)
 
 @login_required(login_url='/reg/login/')
@@ -122,7 +125,7 @@ def leaderBoard(request, event_id):
     eventName=event.name
     resultset=EventResult.objects.filter(team__event=event)
     table=LeaderBoardTable(resultset)
-    contexts = {'eventName':eventName,'user': request.user.username, 'table':table }
+    contexts = {'eventName':eventName,'user': request.user.username,'event':event_id, 'table':table }
     return render(request, template_name='leaderboard.html',context=contexts)
 
 
@@ -141,7 +144,7 @@ def evenregticket(request):
 
 
 # APIs ....
-
+''''''
 def verifyCandidate(request):
     """
     Returns candidate details
@@ -176,11 +179,13 @@ def cadindateDetailsofEvent(request):
             id=request.GET.copy()
             if 'id' in id :
                 eventRegistrationId = id['id']
-
                 if EventRegistration.objects.filter(pk=eventRegistrationId):
+
                     eventRegistration=EventRegistration.objects.get(pk=eventRegistrationId)
                     htmlTable=''
+                    print((eventRegistration.participants.all()))
                     for candidate in eventRegistration.participants.all():
+
                         htmlTable=htmlTable+'<tr><td>'+str(candidate.name)+'</td><td>'+str(candidate.college)+'</td></tr>'
                     return JsonResponse({'resp':True, 'data':{'id': candidate.pk, 'table': htmlTable}}, safe=False)
         return JsonResponse(

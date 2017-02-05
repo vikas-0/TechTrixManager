@@ -21,7 +21,6 @@ class EventRegistrationForm(forms.ModelForm):
         participants_data = self.cleaned_data.get('participants')
         event = self.cleaned_data.get('event')
         participants =[]
-
         for pd in participants_data.split(','):
             p = Candidate.objects.get(pk=pd)
             participants.append(p)

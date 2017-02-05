@@ -36,6 +36,8 @@ INSTALLED_APPS = [
     'eventman.apps.EventmanConfig',
     'registration.apps.RegistrationConfig',
     'default.apps.DefaultConfig',
+    'dal',
+    'dal_select2',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',

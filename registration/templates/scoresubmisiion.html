@@ -2,7 +2,9 @@
 {% block title %}Score Submission{% endblock %}
 
  {% block navrightitem %}
-<li><a><span class="glyphicon glyphicon-user"></span>&nbsp;{{user}}</a></li>
+<li><a href="{% url 'registration:leaderboard' event %}">LeaderBoard</a></li>
+     <li><a><span class="glyphicon glyphicon-user"></span>&nbsp;{{user}}</a></li>
+
      <li><a href="{% url 'registration:logout' %}">logout</a></li>
                 {% endblock %}
 {% block body %}

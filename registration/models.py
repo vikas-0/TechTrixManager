@@ -43,11 +43,7 @@ class EventRegistration(models.Model):
     registeredBy = models.ForeignKey(User, limit_choices_to={'groups__name':'registrar'}, null=False)
 
     def __str__(self):
-        college=''
-        for participant in self.participants.all():
-            if str(participant.college) not in college:
-                college=college+', '+str(participant.college)
-        return str(self.pk)+" "+str(self.teamName)+" "+college+"-"+str(self.event)
+        return str(self.pk)+" "+str(self.teamName)+" "+str(self.event)
 
 class EventResult(models.Model):
     """
