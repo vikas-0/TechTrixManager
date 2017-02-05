@@ -15,9 +15,10 @@ Including another URLconf
 """
 from django.conf.urls import url, include
 from django.contrib import admin
-
+from default import views as defaultview
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^reg/', include('registration.urls')),
     url(r'^event/', include('eventman.urls')),
+    url(r'^status/', defaultview.statistics)
 ]

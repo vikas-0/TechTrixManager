@@ -8,7 +8,6 @@ from  ast import literal_eval
 from .forms import *
 from django.db.models import Sum
 from eventman.models import Event as EventList
-from dal import autocomplete
 # Create your views here.
 
 # Home page for candidate registration(General & event)

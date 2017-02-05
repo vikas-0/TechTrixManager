@@ -1,14 +1,11 @@
 from django.conf.urls import url
 from . import views
-from dal import autocomplete
-from .models import Candidate
 app_name='registration'
 
 urlpatterns = [
     url(r'^$', views.registrationHome, name='home'),
     url(r'^login/', views.loginUser, name='login'),
     url(r'^candidate/', views.verifyCandidate, name='user'),
-    url(r'^autocompletCandidate',autocomplete.Select2QuerySetView.as_view(model=Candidate) ,name='accan'),
     url(r'^candidateListinEvent/', views.cadindateDetailsofEvent, name='candidateList'),
     url(r'^eventreg/', views.registerForEvent, name='eventreg'),
     url(r'^generalreg/', views.generalRegistration, name='generalreg'),

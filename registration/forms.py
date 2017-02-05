@@ -1,7 +1,6 @@
 from django import forms
 from .models import *
 import django_tables2 as table
-from eventman.models import *
 from django.core.exceptions import ValidationError
 
 class EventRegistrationForm(forms.ModelForm):
