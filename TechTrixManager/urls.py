@@ -16,9 +16,13 @@ Including another URLconf
 from django.conf.urls import url, include
 from django.contrib import admin
 from default import views as defaultview
+
+admin.site.site_header="Techtrix 2017"
+
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
+    url(r'^', include('registration.urls')),
     url(r'^reg/', include('registration.urls')),
     url(r'^event/', include('eventman.urls')),
-    url(r'^status/', defaultview.statistics)
+    url(r'^status/', defaultview.statistics, name='status')
 ]

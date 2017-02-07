@@ -12,9 +12,12 @@ from eventman.models import Event as EventList
 
 # Home page for candidate registration(General & event)
 @login_required(login_url='/reg/login/')
-@user_passes_test(login_url='/reg/login/', test_func= lambda user: 'registrar' in [i.name for i in user.groups.all()])
 def registrationHome(request):
-    return render(request, template_name='base.html')
+    eventList=Event.objects.all()
+
+    print(eventList)
+    contexts={'eventsubmission':eventList}
+    return render(request, template_name='home.html',context=contexts)
 
 
 # Renders login page and also handles login request only for registrar
@@ -24,25 +27,27 @@ def loginUser(request):
     if request.GET:
         redirectTo = request.GET['next']
 
+    # if request.user.is_authenticated():
+    #     return HttpResponseRedirect(reverse('registration:home'))
+
     if request.method == 'POST':
         username = request.POST['username']
         password = request.POST['password']
         user = authenticate(username=username, password=password)
         if user is not None:
             if user.is_active:
-                if 'registrar' in [i.name for i in user.groups.all()]:
-                    login(request, user)
-                    if redirectTo=="":
-                        return render(request, 'base.html')
-                    else:
-                        # If login page is opened due to failed authentication
-                        return HttpResponseRedirect(redirectTo)
+                login(request, user)
+                if redirectTo=="":
+                    return HttpResponseRedirect(reverse('registration:home'))
                 else:
-                    return render(request, 'login.html', {'error_message': 'You are not authorised for this section', 'next':redirectTo})
+                    # If login page is opened due to failed authentication
+                        return HttpResponseRedirect(redirectTo)
+
             else:
                 return render(request, 'login.html', {'error_message': 'Your account has been disabled', 'next':redirectTo})
         else:
             return render(request, 'login.html', {'error_message': 'Invalid login', 'next':redirectTo})
+
     return render(request, template_name='login.html',context={'next':redirectTo})
 
 
@@ -195,9 +200,6 @@ def cadindateDetailsofEvent(request):
             {'resp': False, 'data': None},
             safe=False)
 
-
-
-
 def logoutUser(request):
     logout(request)
-    return render(request, 'login.html', {'error_message': 'Logged Out', 'next': request})
+    return HttpResponseRedirect(reverse('registration:login'))

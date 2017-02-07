@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+{% block title %}Dashboard{% endblock %}
+
+ {% block navrightitem %}
+
+<li><a><span class="glyphicon glyphicon-user"></span>&nbsp;{{user}}</a></li>
+     <li><a href="{% url 'registration:logout' %}">logout</a></li>
+                {% endblock %}
+{% block body %}
+    <div class="row">
+    <div class="col-sm-6">
+        <div class="panel panel-default">
+                <div class="panel-heading" >Registration Desk Link</div>
+                <div    class="panel-body">
+                        <p><a href="{% url 'registration:eventreg'%}">Event Registration</a></p>
+                        <p><a href="{% url 'registration:generalreg'%}">General Registration Registration</a></p>
+
+                </div>
+            </div>
+        <div class="panel panel-default">
+                <div class="panel-heading" >Admin</div>
+                <div    class="panel-body">
+                        <p><a href="{% url 'status'%}">Status</a></p>
+                        <p><a href="{% url 'admin:index'%}">Administrative Dashboard</a></p>
+
+                </div>
+            </div>
+    </div>
+
+        <div class="col-sm-6">
+
+            <div class="panel panel-default">
+                <div class="panel-heading" >Event Coordinators' Link</div>
+                <div    class="panel-body">
+                    {% for event in eventsubmission %}
+                        <p><a href="{% url 'registration:scoreSub' event.pk %}">{{ event.name }}</a></p>
+                    {% endfor %}
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

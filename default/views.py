@@ -1,9 +1,11 @@
 from django.shortcuts import render_to_response
+from django.contrib.auth.decorators import user_passes_test
 from chartit import DataPool, Chart
 from registration.models import *
 from django.db.models import Sum, Count
 # Create your views here.
 
+@user_passes_test(lambda u: u.is_superuser, login_url='/reg/login/')
 def statistics(request):
 
     moneyByGenralReg=Candidate.objects.aggregate(Sum('feePayable'))['feePayable__sum']
