@@ -13,6 +13,11 @@
         <link rel="stylesheet" href="{% static 'site/css/bootstrap-tagsinput.css' %}">
         <link rel="stylesheet" href="{% static 'site/css/font-awesome.min.css' %}">
         <link rel="stylesheet" href="{% static 'site/css/select2.min.css' %}">
+    <style>
+    input,select{
+        width: 400px;
+    }
+    </style>
 <form class="form-horizontal center-block" method="POST"  action="{% url 'registration:generalreg'%}">
           {% csrf_token %}
   <fieldset style="margin:2em">
@@ -43,6 +48,13 @@
  <script>
  $(document).ready(function() {
   $("#id_college").select2();
+  $(".form-group:has(#id_others)").hide();
+  $('#id_college').on('change', function () {
+      if($('#id_college option:selected').html()=='Other')
+          $(".form-group:has(#id_others)").show();
+      else
+          $(".form-group:has(#id_others)").hide();
+  });
 });
 </script>
 {% endblock %}

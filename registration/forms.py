@@ -35,10 +35,10 @@ class EventRegistrationForm(forms.ModelForm):
 
 
 class GeneralRegistrationForm(forms.ModelForm):
-
+    others = forms.CharField(required=False)
     class Meta:
         model=Candidate
-        fields=['name', 'email', 'contactNo', 'college', 'feePaid']
+        fields=['name', 'email', 'contactNo', 'college','others', 'feePaid']
 
     def clean_feePaid(self):
         feepaid=self.cleaned_data.get('feePaid')
@@ -46,9 +46,22 @@ class GeneralRegistrationForm(forms.ModelForm):
             raise ValidationError('Please pay the fee First :)')
         return feepaid
 
+    def clean_college(self):
+        colName=self.cleaned_data.get('college')
+        if colName.name=='Other':
+            try:
+                newName = College(name=self.data['others'])
+                newName.save()
+                return newName
+            except:
+                raise ValidationError('College is already in list. If not appearing refresh the page')
+        return colName
+
     def __init__(self, *args, **kwargs):
         super(GeneralRegistrationForm, self).__init__(*args, **kwargs)
         self.fields['college'].empty_label = ''
+
+        # self.fields['college'].choices = list(self.fields['college'].choices
 
 class EventParticipationForm(forms.ModelForm):
     class Meta:
