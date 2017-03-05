@@ -7,7 +7,11 @@ from django.urls import reverse
 from  ast import literal_eval
 from .forms import *
 from django.db.models import Sum
+from django.contrib.staticfiles.templatetags.staticfiles import static
 from eventman.models import Event as EventList
+from xlsxwriter.workbook import Workbook
+import io
+from urllib.request import urlopen
 # Create your views here.
 
 # Home page for candidate registration(General & event)
@@ -132,6 +136,44 @@ def leaderBoard(request, event_id):
     contexts = {'eventName':eventName,'user': request.user.username,'event':event_id, 'table':table }
     return render(request, template_name='leaderboard.html',context=contexts)
 
+
+@login_required(login_url='/reg/login/')
+@user_passes_test(login_url='/reg/login/', test_func= lambda user: 'coordinator' in [i.name for i in user.groups.all()])
+def participantList(request, event_id):
+    event=get_object_or_404(EventList, pk=event_id)
+    eventName=event.name
+    participants = EventRegistration.objects.filter(event=event, eventresult__isnull=True)
+    output = io.BytesIO()
+    book = Workbook(output)
+    sheet=book.add_worksheet('List')
+    sheet.set_header("TechTrix2017\n"+eventName)
+
+    sheet.write(0, 0, 'Id')
+    sheet.write(0, 0 + 1, 'Team Name')
+    sheet.write(0, 0 + 2, 'Participant Details')
+    sheet.write(0, 0 + 3, 'Score/Signature')
+
+    row = 1
+    column =0
+
+    for items in participants:
+
+        participant_name_and_number=''
+        member=items.participants.all()
+
+        for members in member:
+            participant_name_and_number=participant_name_and_number+' '+members.name+'('+members.contactNo+'), '
+        sheet.write(row, column, items.id)
+        sheet.write(row, column+1, items.teamName)
+        sheet.write(row, column+2, participant_name_and_number)
+        sheet.write(row, column+3,'')
+        row=row+1
+    book.close()
+
+    output.seek(0)
+    response = HttpResponse(output.read(), content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+    response['Content-Disposition'] = "attachment; filename="+eventName+".xlsx"
+    return response
 
 @login_required(login_url='/reg/login/')
 @user_passes_test(login_url='/reg/login/', test_func= lambda user: 'registrar' in [i.name for i in user.groups.all()])

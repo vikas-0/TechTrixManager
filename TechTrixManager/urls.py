@@ -21,8 +21,10 @@ admin.site.site_header="Techtrix 2017"
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
-    url(r'^', include('registration.urls')),
+    url(r'^', include('registration.urls'),name='root'),
     url(r'^reg/', include('registration.urls')),
     url(r'^event/', include('eventman.urls')),
-    url(r'^status/', defaultview.statistics, name='status')
+    url(r'^status/', defaultview.statistics, name='status'),
+    url(r'^export/', defaultview.export, name='export'),
+    url(r'^exportEvent/', defaultview.exportEventReg, name='exportEvent')
 ]
