@@ -8,4 +8,4 @@ This app contains following features: -
 - Each event manager can login and check/ verify participants.
 - Data Visualization for earning per event, participation per event, participation per college.
 
-**As this application is pretty old and its purpose is finished, It is being archived.**
+**As this application is pretty old and its purpose is finished, It is archived.**
